@@ -10,6 +10,7 @@
   },
   {
     "username": "deneme",
-    "password": "123456789"
+    "password": "123456789",
+    "albums": []
   }
 ]
