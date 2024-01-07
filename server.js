@@ -9,6 +9,7 @@ const updateImageRouter = require('./requests/updateImage');
 const getAlbumsRouter = require('./requests/getAlbums');
 const reauthenticationRouter = require('./requests/reauthentication');
 const createAlbumRouter = require('./requests/createAlbum');
+const deleteAlbumRouter = require('./requests/deleteAlbum');
 
 const app = express();
 
@@ -25,6 +26,7 @@ app.use('/update', updateImageRouter);
 app.use('/get', getAlbumsRouter);
 app.use('/auth', reauthenticationRouter);
 app.use('/create', createAlbumRouter);
+app.use('/delete', deleteAlbumRouter);
 
 const PORT = 9000;
 app.listen(PORT, () => {
