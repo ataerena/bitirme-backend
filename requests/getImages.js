@@ -10,7 +10,7 @@ router.post('/getimages', (req, res) => {
     }
 
     const username = req.body.username;
-    const jsonFilePath = path.join(__dirname, '../database/photosByUsername.json');
+    const jsonFilePath = '../database/photosByUsername.json';
 
     // Reading the JSON file
     try {

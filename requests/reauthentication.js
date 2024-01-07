@@ -1,5 +1,5 @@
 const express = require('express');
-const userData = require('../database/users.json'); // Ensure correct path to your user data
+const userData = require('../../database/users.json'); // Ensure correct path to your user data
 const router = express.Router();
 
 router.post('/reauthenticate', (req, res) => {

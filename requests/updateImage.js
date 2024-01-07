@@ -13,7 +13,7 @@ router.post('/updateImage', (req, res) => {
         return res.status(400).send('Username, image name, or updates were not provided.');
     }
 
-    const jsonFilePath = path.join(__dirname, '../database/photosByUsername.json');
+    const jsonFilePath = '../database/photosByUsername.json';
 
     try {
         let data = JSON.parse(fs.readFileSync(jsonFilePath, 'utf8'));

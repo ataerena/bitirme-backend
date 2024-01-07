@@ -1,6 +1,6 @@
 const express = require('express');
 const fs = require('fs');
-const userData = require('../database/users.json');
+const userData = require('../../database/users.json');
 const router = express.Router();
 
 router.post('/createAlbum', (req, res) => {

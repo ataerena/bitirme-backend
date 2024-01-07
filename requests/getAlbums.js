@@ -1,5 +1,5 @@
 const express = require('express');
-const userData = require('../database/users.json');
+const userData = require('../../database/users.json');
 
 const router = express.Router();
 
