@@ -18,7 +18,7 @@ router.post('/createAlbum', (req, res) => {
 
     // Check if the album already exists for the user
     if (user.albums && user.albums.includes(albumName)) {
-        return res.status(400).send('Album already exists for the user.');
+        return res.status(400).send(`Album already exists for the user.`);
     }
 
     // Update the user's albums array

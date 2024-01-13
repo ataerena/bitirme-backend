@@ -5,8 +5,32 @@ const detection = require('./yoloDetection');
 const axios = require('axios');
 
 const router = express.Router();
-
 router.use(fileUpload());
+
+async function processImage(labelPath, username) {
+    try {
+        var label = await fs.readFileSync(labelPath, 'utf8');
+
+        var upperCaseLabel = label.toUpperCase();
+
+        const createAlbum = {
+            username: username,
+            albumName: upperCaseLabel
+        };
+
+        if (label.length !== 0) {
+            const response = await axios.post('http://localhost:9000/create/createAlbum', createAlbum);
+            console.log(response.data);
+        } else {
+            console.log('LABEL IS UNDEFINED');
+        }
+        
+    } catch (error) {
+        console.error(`Error processing image: ${error.message}`);
+    }
+
+    return upperCaseLabel;
+}
 
 router.post('/upload', async (req, res) => {
     if (!req.files || !req.files.image || !req.body.username) {
@@ -17,55 +41,13 @@ router.post('/upload', async (req, res) => {
     const username = req.body.username;
     const jsonFilePath = '../database/photosByUsername.json';
     const labelPath = './result.txt';
-    var label = "";
 
     const base64Data = image.data.toString('base64');
-    await detection(base64Data)
-
-    fs.readFile(labelPath, 'utf8', (err, data) => {
-        if (err){
-            console.error(`Error reading label: ${err.message}`)
-        }
-        else {
-            label = data;
-
-            const upperCaseLabel = label.toUpperCase();
-            var myImageNames = [];
-            myImageNames.push(image.name);
-
-            const createAlbum = {
-                username: username, 
-                albumName: upperCaseLabel
-            }
-
-            const addToAlbum = {
-                username: username,
-                albumName: upperCaseLabel,
-                imageNames: myImageNames
-            }
-
-            if (label.length != 0){
-                axios.post('http://localhost:9000/create/createAlbum', createAlbum)
-                    .then( res => {
-                        console.log(res)
-                    })
-                    .catch( err => {
-                        console.log(err);
-                    })
-
-                axios.post('http://localhost:9000/add/addImagesToAlbum', addToAlbum)
-                .then( res => {
-                    console.log(res)
-                })
-                .catch( err => {
-                    console.log(err);
-                })    
-            }
-            else {
-                console.log('LABEL IS UNDEFINED');
-            }
-        }
-    })
+    await detection(base64Data);
+    var label = await processImage(labelPath, username);
+    console.log('LABEL IS: ', label);
+    console.log('LABEL TYPE IS: ', typeof label);
+    console.log('LABEL LENGTH IS: ', label.length);
 
     let data = [];
     try {
@@ -83,52 +65,102 @@ router.post('/upload', async (req, res) => {
         const existingImageIndex = existingUserImages.findIndex((img) => img.name === image.name);
 
         if (existingImageIndex !== -1) {
-            // If the image with the same name exists, update its data
-            existingUserImages[existingImageIndex] = {
-                name: image.name,
-                favorite: false,
-                restricted: false,
-                deleted: false,
-                archived: false,
-                albums: [],
-                base64: {
-                    data: base64Data,
-                    mimetype: image.mimetype // Optionally store mimetype for reference
-                }
-            };
+
+            if (label.length == 0){
+                existingUserImages[existingImageIndex] = {
+                    name: image.name,
+                    favorite: false,
+                    restricted: false,
+                    deleted: false,
+                    archived: false,
+                    albums: [],
+                    base64: {
+                        data: base64Data,
+                        mimetype: image.mimetype
+                    }
+                };
+            }
+            else {
+                existingUserImages[existingImageIndex] = {
+                    name: image.name,
+                    favorite: false,
+                    restricted: false,
+                    deleted: false,
+                    archived: false,
+                    albums: [label],
+                    base64: {
+                        data: base64Data,
+                        mimetype: image.mimetype
+                    }
+                };
+            }
+            
         } else {
-            // If the image doesn't exist, push the new image data as an object into the user's array
-            existingUserImages.push({
-                name: image.name,
-                favorite: false,
-                restricted: false,
-                deleted: false,
-                archived: false,
-                albums: [],
-                base64: {
-                    data: base64Data,
-                    mimetype: image.mimetype // Optionally store mimetype for reference
-                }
-            });
+            if (label.length == 0){
+                existingUserImages.push({
+                    name: image.name,
+                    favorite: false,
+                    restricted: false,
+                    deleted: false,
+                    archived: false,
+                    albums: [],
+                    base64: {
+                        data: base64Data,
+                        mimetype: image.mimetyp
+                    }
+                });
+            }
+            else {
+                existingUserImages.push({
+                    name: image.name,
+                    favorite: false,
+                    restricted: false,
+                    deleted: false,
+                    archived: false,
+                    albums: [label],
+                    base64: {
+                        data: base64Data,
+                        mimetype: image.mimetype
+                    }
+                });
+            }
+            
         }
     } else {
-        // If the username doesn't exist, create a new entry with an array containing the image data
-        const newUserEntry = {
-            [username]: [{
-                name: image.name,
-                favorite: false,
-                restricted: false,
-                deleted: false,
-                archived: false,
-                albums: [],
-                base64: {
-                    data: base64Data,
-                    mimetype: image.mimetype // Optionally store mimetype for reference
-                }
-            }]
-        };
-
-        // Push the new entry into the JSON data
+        if ( label.length == 0){
+            var newUserEntry = {
+                [username]: [{
+                    name: image.name,
+                    favorite: false,
+                    restricted: false,
+                    deleted: false,
+                    archived: false,
+                    albums: [],
+                    base64: {
+                        data: base64Data,
+                        mimetype: image.mimetype
+                    }
+                }]
+            };
+        }
+        else {
+            var newUserEntry = {
+                [username]: [{
+                    name: image.name,
+                    favorite: false,
+                    restricted: false,
+                    deleted: false,
+                    archived: false,
+                    albums: [label],
+                    base64: {
+                        data: base64Data,
+                        mimetype: image.mimetype
+                    }
+                }]
+            };
+        }
+        
+        
         data.push(newUserEntry);
     }
 

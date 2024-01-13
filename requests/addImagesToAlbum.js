@@ -32,7 +32,7 @@ router.post('/addImagesToAlbum', (req, res) => {
     // Rewrite the updated photos data back to the JSON file
     fs.writeFileSync('../database/photosByUsername.json', JSON.stringify(photosData, null, 2));
 
-    res.status(200).send('Album name added to images successfully.');
+    res.status(200).send(`Album name ${albumName} added to images successfully.`);
 });
 
 
