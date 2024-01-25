@@ -1,8 +1,13 @@
 const usersFilePath = '../database/users.json';
 const fs = require('fs');
+const bcrypt = require('bcrypt');
 
 function registerUser(req, res) {
   const { username, password } = req.body;
+
+  const saltRounds = 10;
+  const salt = bcrypt.genSaltSync(saltRounds);
+  const hashedPassword = bcrypt.hashSync(password, salt);
 
   fs.readFile(usersFilePath, 'utf8', (err, data) => {
     if (err) {
@@ -19,7 +24,8 @@ function registerUser(req, res) {
       return;
     }
 
-    const newUser = { username, password };
+    console.log(hashedPassword);
+    const newUser = { username, hashedPassword };
     users.push(newUser);
 
     fs.writeFile(usersFilePath, JSON.stringify(users, null, 2), (writeErr) => {

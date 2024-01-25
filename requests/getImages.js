@@ -11,11 +11,9 @@ router.post('/getimages', (req, res) => {
     const username = req.body.username;
     const jsonFilePath = '../database/photosByUsername.json';
 
-    // Reading the JSON file
     try {
         const data = JSON.parse(fs.readFileSync(jsonFilePath, 'utf8'));
 
-        // Finding the user's images based on the provided username
         const userImages = data.find((entry) => entry.hasOwnProperty(username));
 
         if (userImages) {

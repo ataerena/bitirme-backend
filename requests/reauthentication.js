@@ -1,6 +1,7 @@
 const express = require('express');
-const userData = require('../../database/users.json'); // Ensure correct path to your user data
+const userData = require('../../database/users.json');
 const router = express.Router();
+const bcrypt = require('bcrypt');
 
 router.post('/reauthenticate', (req, res) => {
     const { username, password } = req.body;
@@ -11,12 +12,16 @@ router.post('/reauthenticate', (req, res) => {
 
     const user = userData.find((user) => user.username === username);
 
-    if (!user || user.password !== password) {
-        return res.status(401).send('Invalid username or password.');
-    }
+    bcrypt.compare(password, user.hashedPassword, function(err, result) {
+        if (err) {
+          console.error('Password comparison error:', err);
+        } else if (result) {
+            res.status(200).send('Reauthentication successful.');
+        } else {
+            return res.status(401).send('Invalid username or password.');
+        }
+    });
 
-    // Successful reauthentication
-    res.status(200).send('Reauthentication successful.');
 });
 
 module.exports = router;

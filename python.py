@@ -1,6 +1,5 @@
 from ultralytics import YOLO
 
-
 if __name__ == '__main__':
     model = YOLO("yolov8n.pt")  # choose a lower data model for faster calculation (takes around 4ms on yolov8n)
     results = model("./temp_image.jpg")  # image to predict on comes from backend

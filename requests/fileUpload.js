@@ -56,11 +56,9 @@ router.post('/upload', async (req, res) => {
         console.error('Error reading JSON file:', error);
     }
 
-    // Check if the username already exists in the database
     const existingUserIndex = data.findIndex((entry) => entry.hasOwnProperty(username));
 
     if (existingUserIndex !== -1) {
-        // If the username exists, check if the image with the same name exists for the user
         const existingUserImages = data[existingUserIndex][username];
         const existingImageIndex = existingUserImages.findIndex((img) => img.name === image.name);
 
@@ -164,7 +162,6 @@ router.post('/upload', async (req, res) => {
         data.push(newUserEntry);
     }
 
-    // Write the updated JSON data back to the file
     fs.writeFile(jsonFilePath, JSON.stringify(data, null, 2), (writeErr) => {
         if (writeErr) {
             console.error('Error writing JSON file:', writeErr);
